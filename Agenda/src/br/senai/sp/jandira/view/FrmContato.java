@@ -198,7 +198,7 @@ public class FrmContato extends JFrame {
 		btnSalvar.setToolTipText("Salvar Contato");
 		btnSalvar.setIcon(new ImageIcon(FrmContato.class.getResource("/br/senai/sp/jandira/imagens/save.png")));
 		btnSalvar.setForeground(new Color(0, 0, 0));
-		btnSalvar.setBounds(20, 460, 63, 41);
+		btnSalvar.setBounds(30, 460, 63, 41);
 		panelPrincipal.add(btnSalvar);
 
 		JButton btnSair = new JButton("");
