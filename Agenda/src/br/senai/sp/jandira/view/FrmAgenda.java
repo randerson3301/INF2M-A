@@ -20,9 +20,13 @@ import br.senai.sp.jandira.model.Contato;
 
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.awt.event.ActionEvent;
 import javax.swing.border.BevelBorder;
+import javax.swing.SwingConstants;
 
 public class FrmAgenda extends JFrame {
 
@@ -95,6 +99,20 @@ public class FrmAgenda extends JFrame {
 		btnSair.setBounds(310, 12, 57, 54);
 		painelBotoes.add(btnSair);
 
+		JLabel lblData = new JLabel("Data Atual");
+		lblData.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblData.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblData.setBounds(203, 74, 178, 20);
+
+		// ***Ajustando hora***
+		SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy hh:mm");
+
+		Date dataAtual = new Date();
+
+		lblData.setText("Hoje é: " + df.format(dataAtual));
+
+		painelPrincipal.add(lblData);
+
 		// Eventos
 		btnNovo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -112,13 +130,14 @@ public class FrmAgenda extends JFrame {
 
 		btnExcluir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				
 				receberDados("Excluir");
 			}
 		});
 
 		btnSair.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
+
 				System.exit(0);
 			}
 		});
@@ -177,11 +196,10 @@ public class FrmAgenda extends JFrame {
 		scrollTabela.setViewportView(tabelaContatos);
 
 	}
-	
-	
-	//--------------------------------------------------------------------------------------------------------
-	
-	//Fará a tela da aplicação receber os dados do registro selecionado
+
+	// --------------------------------------------------------------------------------------------------------
+
+	// Fará a tela da aplicação receber os dados do registro selecionado
 	public void receberDados(String op) {
 		FrmContato frmContato = new FrmContato(op, op + " Contato");
 
@@ -196,6 +214,8 @@ public class FrmAgenda extends JFrame {
 
 			Contato contato = new Contato();
 			contato = dao.getContato(id);
+
+			Date dtAtual = new Date();
 
 			frmContato.setTxtID(contato.getId());
 
@@ -212,9 +232,8 @@ public class FrmAgenda extends JFrame {
 		} catch (Exception erro) {
 			System.out.println(erro.getMessage());
 
-			JOptionPane.showMessageDialog(null, "Por favor, selecione um contato.", 
-					"Erro", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Por favor, selecione um contato.", "Erro", JOptionPane.ERROR_MESSAGE);
 		}
-		
+
 	}
 }

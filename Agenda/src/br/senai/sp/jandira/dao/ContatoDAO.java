@@ -3,6 +3,8 @@ package br.senai.sp.jandira.dao;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import br.senai.sp.jandira.model.Contato;
 
@@ -15,6 +17,7 @@ public class ContatoDAO {
 	private Contato contato;
 	private ResultSet result;
 	private PreparedStatement stm;
+	SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
 	
 	
 	//Métodos
@@ -60,6 +63,7 @@ public ArrayList<Contato> getListaContatos() {
 		
 		result = null;
 		stm = null;
+		
 		
 		try{
 			stm = Conexao.getConexao().prepareStatement(consulta);
@@ -115,7 +119,7 @@ public Contato getContato(int id) {
 			result.next();
 			contato.setId(result.getInt("id"));
 			contato.setNome(result.getString("nome"));
-			contato.setDtNasc(String.valueOf(result.getDate("dtNasc")));
+			contato.setDtNasc(df.format(result.getDate("dtNasc")));
 			contato.setEmail(result.getString("email"));
 			contato.setEndereco(result.getString("endereco"));
 			contato.setCelular(result.getString("celular"));
@@ -141,13 +145,98 @@ public Contato getContato(int id) {
 	
 	public void gravar() {
 		
+		
+		String sql = "INSERT INTO contatos" + "( nome, dtNasc, email, endereco,"
+				+ " telefone, celular, sexo)" + 
+				"VALUES(?, ?, ?, ?, ?, ?, ?)";
+		
+		try{
+			
+			stm = Conexao.getConexao().prepareStatement(sql);
+			
+			stm.setString(1, contato.getNome());
+			stm.setString(2, contato.getDtNasc());
+			stm.setString(3, contato.getEmail());
+			stm.setString(4, contato.getEndereco());
+			stm.setString(5, contato.getTelefone());
+			stm.setString(6, contato.getCelular());
+			stm.setString(7, contato.getSexo());
+
+			stm.execute();
+			
+			JOptionPane.showMessageDialog(null, "Sucesso");
+			//System.exit(0);
+			
+			Conexao.fecharConexao();
+			
+			
+			
+		}catch(Exception erro) {
+			System.out.println(erro.getMessage());
+		}
 	}
 	
 	public void atualizar() {
+		String sql = "UPDATE contatos " + "SET nome = ?, dtNasc = ?, email = ?, endereco = ?,"
+				+ " telefone = ?, celular = ?, sexo = ? " + 
+				"WHERE id = ?";
 		
+		try{
+			
+			
+			
+			stm = Conexao.getConexao().prepareStatement(sql);
+			
+			stm.setString(1, contato.getNome());
+			stm.setString(2, contato.getDtNasc());
+			stm.setString(3, contato.getEmail());
+			stm.setString(4, contato.getEndereco());
+			stm.setString(5, contato.getTelefone());
+			stm.setString(6, contato.getCelular());
+			stm.setString(7, contato.getSexo());
+			stm.setInt(8, contato.getId());
+
+			stm.execute();
+			
+			JOptionPane.showMessageDialog(null, "Sucesso");
+			System.exit(0);
+			
+			Conexao.fecharConexao();
+			
+			
+			
+		}catch(SQLException erro) {
+			System.out.println(erro.getMessage());
+			erro.printStackTrace();
+		}
 	}
 	
 	public void excluir() {
+		String sql = "DELETE FROM contatos " + "WHERE id = ?";
 		
+		try{
+			
+			
+			
+			stm = Conexao.getConexao().prepareStatement(sql);
+			
+			
+			stm.setInt(1, contato.getId());
+
+			stm.execute();
+			
+			JOptionPane.showMessageDialog(null, "Sucesso");
+			System.exit(0);
+			
+			Conexao.fecharConexao();
+			
+			
+			
+		}catch(SQLException erro) {
+			System.out.println(erro.getMessage());
+			erro.printStackTrace();
+		}
 	}
+	
+	
 }
