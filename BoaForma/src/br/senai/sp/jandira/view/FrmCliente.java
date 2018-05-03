@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.MaskFormatter;
 
+import br.senai.sp.jandira.controller.ControllerClienteDAO;
 import br.senai.sp.jandira.model.Cliente;
 
 import java.awt.Color;
@@ -21,7 +22,9 @@ import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import java.awt.event.ActionListener;
+import java.util.Date;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.awt.event.ActionEvent;
 import javax.swing.border.TitledBorder;
 import javax.swing.UIManager;
@@ -37,12 +40,29 @@ public class FrmCliente extends JFrame {
 	private JTextField txtID;
 	private JTextField txtIMC;
 
+	public void setTxtNome(String nome) {
+		this.txtNome.setText(nome);
+	}
+
+	public void setTxtPeso(int peso) {
+		this.txtPeso.setText(String.valueOf(peso));;
+	}
+
+	public void setTxtAltura(int altura) {
+		this.txtPeso.setText(String.valueOf(altura));
+	}
+
+	public void setTxtID(int id) {
+		this.txtID.setText(String.valueOf(id));;
+	}
+
+	
+
 	/**
 	 * Create the frame.
 	 */
-	public FrmCliente() {
-		setTitle(" Dados do Cliente");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	public FrmCliente(String operacao, String title) {
+		setTitle(title);
 		setBounds(100, 100, 468, 625);
 		panelPrincipal = new JPanel();
 		panelPrincipal.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -256,7 +276,7 @@ public class FrmCliente extends JFrame {
 		lblTitulo.setBounds(10, 3, 187, 67);
 		panelTitulo.add(lblTitulo);
 
-		JLabel lblOperacao = new JLabel("op");
+		JLabel lblOperacao = new JLabel(operacao);
 		lblOperacao.setForeground(Color.RED);
 		lblOperacao.setFont(new Font("Tahoma", Font.ITALIC, 22));
 		lblOperacao.setBounds(322, 22, 120, 34);
@@ -270,6 +290,54 @@ public class FrmCliente extends JFrame {
 		panelBotoes.setBackground(new Color(155, 194, 255));
 
 		JButton btnSalvar = new JButton("");
+		btnSalvar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				SimpleDateFormat toDate = new SimpleDateFormat("##/##/##");
+				
+				//data para o banco
+				SimpleDateFormat toDataBase = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.000000");
+				
+				Date date = null;
+				
+				String dataAccess = "";
+				
+				try {
+					date = toDate.parse(txtData.getText());
+					
+					dataAccess = toDataBase.format(date);
+					
+					//Criando um cliente
+					Cliente cliente = new Cliente();
+					
+					cliente.setNome(txtNome.getText());
+					
+					cliente.setDtNascimento(dataAccess);
+					
+					cliente.setPeso(Integer.parseInt(txtPeso.getText()));
+					
+					cliente.setAltura(Integer.parseInt(txtAltura.getText()));
+					
+					ControllerClienteDAO.setSexo(cliente.getSexo(),
+							btnH.isSelected());
+					
+					cliente.setNivelAtividade(
+							cbNivel.getSelectedItem().toString());
+					
+					ControllerClienteDAO.setOperacaoBanco(operacao, 
+							txtID.getText());
+					
+					} 
+				catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				
+				
+				
+			}
+		});
 		btnSalvar.setIcon(new ImageIcon(FrmCliente.class.getResource("/br/senai/sp/jandira/imagens/save.png")));
 		btnSalvar.setToolTipText("Salvar");
 		btnSalvar.setBounds(10, 24, 71, 56);

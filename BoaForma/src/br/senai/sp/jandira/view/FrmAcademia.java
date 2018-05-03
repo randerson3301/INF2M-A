@@ -6,7 +6,9 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
 
+import br.senai.sp.jandira.dao.ClienteDAO;
 import br.senai.sp.jandira.model.Cliente;
 
 import java.awt.Color;
@@ -19,6 +21,7 @@ import javax.swing.border.BevelBorder;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Date;
 import java.awt.event.ActionEvent;
 
 public class FrmAcademia extends JFrame {
@@ -61,6 +64,16 @@ public class FrmAcademia extends JFrame {
 		panelBotoes.setLayout(null);
 
 		JButton btnAdicionar = new JButton("");
+		btnAdicionar.addActionListener(new ActionListener() {
+			
+			//Evento do botão adicionar
+			public void actionPerformed(ActionEvent arg0) {
+				FrmCliente frmCliente = new FrmCliente("Adicionar", "Adicionar" );
+				
+				frmCliente.setVisible(true);
+				
+			}
+		});
 		btnAdicionar.setToolTipText("Adicionar Cliente");
 		btnAdicionar.setIcon(new ImageIcon(FrmAcademia.class.getResource("/br/senai/sp/jandira/imagens/add.png")));
 			
@@ -98,9 +111,91 @@ public class FrmAcademia extends JFrame {
 		tableClientes = new JTable();
 		ArrayList<Cliente> clientes = new ArrayList<>();
 		
+		ClienteDAO dao = new ClienteDAO();
 		
+		//ArrayList recebe o contatoDAO
+		clientes = dao.getListaClientes();
 		
+		//Proibindo a realocação das colunas
+		DefaultTableModel modelTabela = new DefaultTableModel() {
+			public boolean isCellEditable(int col, int row) {
+				return false;
+			}
+		};
+		
+		//Adicionando nomes as colunas que serão criadas
+		String[] nomeColunas = {"ID", "Nome"};
+		
+		modelTabela.setColumnIdentifiers(nomeColunas);
+		
+		//Recebendo os dados do banco
+		Object[] linha = new Object[2];
+		
+		for(Cliente cliente : clientes) {
+			linha[0] = cliente.getId();
+			
+			linha[1] = cliente.getNome();
+			
+			modelTabela.addRow(linha);
+		}
+		
+		//Setando o modelo a tabela
+		tableClientes.setModel(modelTabela);
+		
+		//Proibindo a movimentação
+		tableClientes.getTableHeader().setReorderingAllowed(false);
+		
+		//Colocando um tamanho para os colunas
+		tableClientes.getColumnModel().getColumn(0).setPreferredWidth(50);
+		tableClientes.getColumnModel().getColumn(0).setResizable(false);
+		
+		tableClientes.getColumnModel().getColumn(1).setPreferredWidth(478);
+		tableClientes.getColumnModel().getColumn(1).setResizable(false);
+
 		
 		scrollTabela.setViewportView(tableClientes);
+	}
+	
+	public void receberDados(String op) {
+		FrmCliente frmCliente = new FrmCliente(op, op + "Cliente");
+		
+		//********Receber dados pela linha selecionada
+		
+		try {
+			int linha = tableClientes.getSelectedRow();
+		
+			int id = (int)tableClientes.getValueAt(linha, 0); 
+			
+			ClienteDAO dao = new ClienteDAO();
+			
+			Cliente cliente = new Cliente();
+			
+			cliente = dao.getCliente(id);
+			
+			Date dtAtual = new Date();
+			
+			frmCliente.setTxtID(cliente.getId());
+			
+			frmCliente.setTxtAltura(cliente.getAltura());
+			
+			frmCliente.setTxtNome(cliente.getNome());
+			
+			frmCliente.setTxtPeso(cliente.getPeso());
+			
+			//frmCliente.setTxtDtNascimento(cliente.getDtNascimento());
+
+			
+
+			
+
+			
+		}catch(Exception erro) {
+			System.out.println(erro.getMessage());
+			
+			
+		}
+		
+		
+		
 	}
 }

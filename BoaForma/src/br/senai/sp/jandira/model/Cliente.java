@@ -5,30 +5,39 @@ package br.senai.sp.jandira.model;
  * devem permanecer e serem criados nessa E APENAS NESSA classe.
  */
 public class Cliente {
-	//Atributos do cliente
+	// Atributos do cliente
+	private int id;
+
 	private String nome;
-	
-	private int idade;
-	
+
+	private String dtNascimento;
+
 	private int peso;
-	
+
 	private int altura;
-	
-	private char sexo;
-	
+
+	private String sexo;
+
 	private String nivelAtividade;
-	
+
 	private double taxaNivel;
-	
-	//Atributos dos cálculos
+
+	// Atributos dos cálculos
 	private double imc;
-	
+
 	private double fcm;
 
 	private double tmb;
-	
-	
-	//Métodos 
+
+	// *************Métodos getters e setters****************
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	public double getImc() {
 		return imc;
 	}
@@ -61,12 +70,12 @@ public class Cliente {
 		this.nome = nome;
 	}
 
-	public int getIdade() {
-		return idade;
+	public String getDtNascimento() {
+		return dtNascimento;
 	}
 
-	public void setIdade(int idade) {
-		this.idade = idade;
+	public void setDtNascimento(String data) {
+		this.dtNascimento = data;
 	}
 
 	public String getNivelAtividade() {
@@ -85,11 +94,11 @@ public class Cliente {
 		this.taxaNivel = taxaNivel;
 	}
 
-	public char getSexo() {
+	public String getSexo() {
 		return sexo;
 	}
 
-	public void setSexo(char sexo) {
+	public void setSexo(String sexo) {
 		this.sexo = sexo;
 	}
 

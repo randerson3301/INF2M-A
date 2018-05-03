@@ -13,7 +13,7 @@ public class Conexao {
 	 */
 	private static Connection con; //abre a conexão(túnel).
 	
-	private static Connection getConexao() {
+	public static Connection getConexao() {
 		con = null;
 		
 		try {
@@ -40,7 +40,7 @@ public class Conexao {
 	}
 	
 	//fechar conexão com o banco
-	private static void fecharConexao() {
+	public static void fecharConexao() {
 		if(con != null) {
 			try {
 				con.close();
