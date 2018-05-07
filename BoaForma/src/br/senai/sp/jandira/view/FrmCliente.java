@@ -30,6 +30,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.border.TitledBorder;
 import javax.swing.UIManager;
 import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
 
 public class FrmCliente extends JFrame {
 
@@ -74,16 +75,6 @@ public class FrmCliente extends JFrame {
 	public void setCbSexo(String sexo) {
 
 		dao.setSexo(sexo, cbSexo);
-
-		// if (sexo.equals("F")) {
-		// cbSexo.setSelectedIndex(0);
-		//
-		// } else if (sexo.equals("M")) {
-		// cbSexo.setSelectedIndex(1);
-		//
-		// } else if (sexo.equals("N")) {
-		// cbSexo.setSelectedIndex(2);
-		// }
 
 	}
 
@@ -270,6 +261,21 @@ public class FrmCliente extends JFrame {
 		scrollIMC.setBounds(6, 56, 440, 53);
 		panelResultados.add(scrollIMC);
 
+		JPanel panelIMC = new JPanel();
+		scrollIMC.setViewportView(panelIMC);
+		panelIMC.setLayout(null);
+
+		JLabel lblClassificacao = new JLabel("...");
+		lblClassificacao.setFont(new Font("Arial", Font.PLAIN, 12));
+		lblClassificacao.setForeground(Color.BLUE);
+		lblClassificacao.setBounds(5, 5, 140, 14);
+		panelIMC.add(lblClassificacao);
+
+		JLabel lblSintomas = new JLabel("...");
+		lblSintomas.setForeground(Color.BLUE);
+		lblSintomas.setBounds(5, 24, 400, 14);
+		panelIMC.add(lblSintomas);
+
 		txtIdade = new JTextField();
 		txtIdade.setColumns(10);
 		txtIdade.setBounds(306, 15, 86, 20);
@@ -339,29 +345,9 @@ public class FrmCliente extends JFrame {
 					dao.setCliente(cliente);
 
 					dao.setOperacaoBanco(lblOperacao.getText(), txtID.getText());
-					
-					limparCampos(lblOperacao.getText());	
 
-					// if (lblOperacao.getText().equals("Adicionar")) {
-					// dao.gravar();
-					//
-					// } else if (lblOperacao.getText().equals("Editar")) {
-					// cliente.setId(Integer.parseInt(txtID.getText()));
-					// dao.atualizar();
-					// } else if (lblOperacao.getText().equals("Excluir")) {
-					// cliente.setId(Integer.parseInt(txtID.getText()));
-					//
-					// int confirma = JOptionPane.showConfirmDialog(null, "Deseja excluir " + "o
-					// cliente ?",
-					// "Confirmação", JOptionPane.OK_OPTION, JOptionPane.CANCEL_OPTION);
-					//
-					// if (confirma == JOptionPane.OK_OPTION) {
-					// dao.excluir();
-					//
-					// } else {
-					// JOptionPane.showMessageDialog(null, "O cliente não foi excluido", "Info",
-					// JOptionPane.INFORMATION_MESSAGE);
-					// }
+					dao.limparCampos(lblOperacao.getText(), txtNome, txtData, txtID, txtAltura, txtPeso, cbNivel,
+							cbSexo);
 
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
@@ -390,10 +376,9 @@ public class FrmCliente extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				
+
 				txtIdade.setText(String.valueOf(dao.getIdade(txtData.getText())));
-				
-				
+
 				// Setando valores dos atributos do cliente
 				cliente.setNome(txtNome.getText());
 				cliente.setAltura(Integer.parseInt(txtAltura.getText()));
@@ -407,33 +392,33 @@ public class FrmCliente extends JFrame {
 
 				// Resultado do IMC deverá aparecer aqui
 
-				lblResultIMC.setText(String.valueOf(dao.calcularIMC
-						(txtPeso.getText(), txtAltura.getText())));
-				
-				cliente.setTmb(dao.calcularTMB(Integer.parseInt(txtPeso.getText()), 
-								Integer.parseInt(txtAltura.getText()), 
-								dao.getIdade(txtData.getText()), 
-								dao.calcularTaxaNivel(
-										cbNivel.getSelectedItem().toString()),
-								cbSexo.getSelectedIndex()));
-				
+				cliente.setImc(dao.calcularIMC(txtPeso.getText(), txtAltura.getText()));
+
+				lblResultIMC.setText(String.valueOf(cliente.getImc()));
+
+				// retornando sintomas e classificação do cliente
+				lblClassificacao.setText(dao.setClassificacao(cliente.getImc(), lblClassificacao.getText()));
+				lblSintomas.setText(dao.setSintomas(cliente.getImc(), lblSintomas.getText()));
+
+				cliente.setTmb(dao.calcularTMB(Integer.parseInt(txtPeso.getText()),
+						Integer.parseInt(txtAltura.getText()), dao.getIdade(txtData.getText()),
+						dao.calcularTaxaNivel(cbNivel.getSelectedItem().toString()), cbSexo.getSelectedIndex()));
+
 				lblResultTMB.setText(String.valueOf(cliente.getTmb()));
-				
-				
-				//pegando resultados do fcm
-				cliente.setFcm(dao.calcularFCM(dao.getIdade(txtData.getText()), 
-						Integer.parseInt(txtPeso.getText()),
+
+				// pegando resultados do fcm
+				cliente.setFcm(dao.calcularFCM(dao.getIdade(txtData.getText()), Integer.parseInt(txtPeso.getText()),
 						cbSexo.getSelectedIndex()));
-				
+
 				lblResultFCM.setText(String.valueOf(cliente.getFcm()));
-				
-//				System.out.println(String.valueOf(dao.calcularTMB
-//						(Integer.parseInt(txtPeso.getText()), Integer.parseInt(txtAltura.getText(), 
-//								dao.getIdade(txtData.getText()), 
-//								dao.calcularTaxaNivel(
-//										cbNivel.getSelectedItem().toString()),
-//								cbSexo.getSelectedIndex())));
-				
+
+				// System.out.println(String.valueOf(dao.calcularTMB
+				// (Integer.parseInt(txtPeso.getText()), Integer.parseInt(txtAltura.getText(),
+				// dao.getIdade(txtData.getText()),
+				// dao.calcularTaxaNivel(
+				// cbNivel.getSelectedItem().toString()),
+				// cbSexo.getSelectedIndex())));
+
 				// classificação e sintomas do cliente
 				// cliente.validarClassificacao(cliente.getImc(),
 				// String.valueOf(listIMC.getSelectedIndex()));
@@ -449,21 +434,5 @@ public class FrmCliente extends JFrame {
 
 			}
 		});
-	}
-
-	// método para limpar os campos após adicionar um cliente
-	public void limparCampos(String s) {
-
-		if (s.equals("Adicionar")) {
-			txtID.setText("");
-			txtNome.setText("");
-			txtData.setText("");
-			txtPeso.setText("");
-			txtAltura.setText("");
-			cbSexo.setSelectedIndex(0);
-			cbNivel.setSelectedIndex(0);
-			
-			txtNome.grabFocus();
-		}
 	}
 }

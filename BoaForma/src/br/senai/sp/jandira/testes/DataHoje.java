@@ -7,7 +7,7 @@ public class DataHoje {
 	
 	public static void main(String[] args) {
 		
-		SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+		SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
 		
 		Date date = new Date();
 		

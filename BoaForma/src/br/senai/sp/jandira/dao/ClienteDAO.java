@@ -9,6 +9,7 @@ import java.util.Date;
 
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
 import br.senai.sp.jandira.jdbc.Conexao;
 import br.senai.sp.jandira.model.Cliente;
@@ -269,6 +270,24 @@ public class ClienteDAO {
 		}
 	}
 
+	// limpando os campos após a adição de um novo contato
+	// método para limpar os campos após adicionar um cliente
+	public void limparCampos(String s, JTextField t1, JTextField t2, JTextField t3, JTextField t4, JTextField t5,
+			JComboBox<String> box1, JComboBox box2) {
+
+		if (s.equals("Adicionar")) {
+			t1.setText("");
+			t2.setText("");
+			t3.setText("");
+			t4.setText("");
+			t5.setText("");
+			box1.setSelectedIndex(0);
+			box2.setSelectedIndex(0);
+
+			t1.grabFocus();
+		}
+	}
+
 	// setando a sexualidade do cliente
 	public void setSexo(String s, JComboBox cb) {
 		if (s.equals("F")) {
@@ -312,6 +331,77 @@ public class ClienteDAO {
 		return p / (a * a);
 	}
 
+	// método para validar a classificação de acordo com o imc do cliente
+	public String setClassificacao(double imc, String classificacao) {
+		if (imc <= 16.9) {
+			classificacao = "Muito Abaixo do peso";
+			return classificacao;
+
+		} else if (imc <= 18.4) {
+			classificacao = " Abaixo do peso";
+			return classificacao;
+
+		} else if (imc <= 24.9) {
+			classificacao = "Peso Normal";
+			return classificacao;
+
+		} else if (imc <= 29.9) {
+			classificacao = "Acima do peso";
+			return classificacao;
+
+		} else if (imc <= 34.9) {
+			classificacao = "Obesidade Grau I";
+			return classificacao;
+
+		} else if (imc <= 40) {
+			classificacao = "Obesidade Grau II";
+			return classificacao;
+
+		} else if (imc > 40) {
+			classificacao = "Obesidade Grau III";
+			return classificacao;
+
+		} else {
+			return "";
+		}
+	}
+
+	// método para validar os sintomas do usuário
+	public String setSintomas(double imc, String sintomas) {
+		if (imc <= 16.9) {
+			sintomas = "Queda de cabelo, infertilidade, ausência menstrual";
+			return sintomas;
+
+		} else if (imc <= 18.4) {
+			sintomas = "Fadiga, stress, ansiedade";
+			return sintomas;
+
+		} else if (imc <= 24.9) {
+			sintomas = "Menor risco de doenças";
+			return sintomas;
+
+		} else if (imc <= 29.9) {
+			sintomas = "Fadiga, má circulação, varizes";
+			return sintomas;
+
+		} else if (imc <= 34.9) {
+			sintomas = "Diabetes, angina, infarto, aterosclerose.";
+			return sintomas;
+
+		} else if (imc <= 40) {
+			sintomas = "Apneia do sono, falta de ar.";
+			return sintomas;
+
+		} else if (imc > 40) {
+			sintomas = "Refluxo, dificuldade para se mover, escaras, diabetes, infarto, AVC ";
+			return sintomas;
+
+		} else {
+			return "";
+
+		}
+	}
+
 	// método para retornar a diferença de data
 	public int getIdade(String dtNasc) {
 
@@ -331,74 +421,74 @@ public class ClienteDAO {
 
 		if (monNasc > monPC) {
 			return (yearPC - yearNasc) - 1;
-		
+
 		} else if (monNasc < monPC) {
 			return (yearPC - yearNasc);
-		
+
 		} else {
 			int dayNasc = Integer.parseInt(dtNasc.substring(0, 2));
 
 			int dayPC = Integer.parseInt(dtPC.substring(0, 2));
-			
-			if(dayNasc > dayPC) {
+
+			if (dayNasc > dayPC) {
 				return (yearPC - yearNasc) - 1;
-			
-			} else if(dayNasc <= dayPC) {
+
+			} else if (dayNasc <= dayPC) {
 				return (yearPC - yearNasc);
 			}
 		}
 
 		return 0;
 	}
-	
+
 	// método para cálculo da taxa de nivel de acordo com o cliente
-		public double calcularTaxaNivel(String nivelAtividade) {
-			if (nivelAtividade.equals("Sedentário")) {
-				return 1.20;
-			}
-
-			else if (nivelAtividade.equals("Levemente Ativo")) {
-				return 1.37;
-			
-			} else if (nivelAtividade.equals("Moderadamente Ativo")) {
-				return 1.55;
-			
-			} else if (nivelAtividade.equals("Bastante Ativo")) {
-				return 1.70;
-
-			} else {
-				return 1.90;
-			} 
+	public double calcularTaxaNivel(String nivelAtividade) {
+		if (nivelAtividade.equals("Sedentário")) {
+			return 1.20;
 		}
-		
-		// calcular o TMB
-		public double calcularTMB(int peso, int altura, int idade, double taxaNivel, int homem) {
-			//int p = Integer.parseInt(peso); //convertendo valor do txtPeso para int
-			//int a = Integer.parseInt(altura);
-			
-			System.out.println(idade);
 
-			if (homem == 1) {
-				return (66 + (13.7 * peso) + (5 * altura) - (6.8 * idade)) * taxaNivel;
+		else if (nivelAtividade.equals("Levemente Ativo")) {
+			return 1.37;
 
-			} else {
-				return (665 + (9.6 * peso) + (1.8 * altura) - (4.7 * idade)) * taxaNivel;
+		} else if (nivelAtividade.equals("Moderadamente Ativo")) {
+			return 1.55;
 
-			}
-			
+		} else if (nivelAtividade.equals("Bastante Ativo")) {
+			return 1.70;
+
+		} else {
+			return 1.90;
 		}
-		
-		// FCM
-		public double calcularFCM(int idade, int peso, int homem) {
+	}
 
-			peso = peso / 100;
+	// calcular o TMB
+	public double calcularTMB(int peso, int altura, int idade, double taxaNivel, int homem) {
+		// int p = Integer.parseInt(peso); //convertendo valor do txtPeso para int
+		// int a = Integer.parseInt(altura);
 
-			if (homem == 1) {
-				return ((210 - (0.5 * idade)) - peso) + 4;
+		System.out.println(idade);
 
-			} else  {
-				return ((210 - (0.5 * idade))) - peso;
+		if (homem == 1) {
+			return (66 + (13.7 * peso) + (5 * altura) - (6.8 * idade)) * taxaNivel;
 
-			}
+		} else {
+			return (665 + (9.6 * peso) + (1.8 * altura) - (4.7 * idade)) * taxaNivel;
+
 		}
+
+	}
+
+	// FCM
+	public double calcularFCM(int idade, int peso, int homem) {
+
+		peso = peso / 100;
+
+		if (homem == 1) {
+			return ((210 - (0.5 * idade)) - peso) + 4;
+
+		} else {
+			return ((210 - (0.5 * idade))) - peso;
+
+		}
+	}
 }
