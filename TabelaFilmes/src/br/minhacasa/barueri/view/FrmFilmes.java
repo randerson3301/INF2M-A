@@ -9,10 +9,15 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import java.awt.Color;
+import java.awt.Component;
+
 import javax.swing.JScrollPane;
 import javax.swing.border.TitledBorder;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+
+import com.sun.xml.internal.ws.developer.MemberSubmissionAddressing.Validation;
 
 import br.minhacasa.barueri.dao.FilmeDAO;
 import br.minhacasa.barueri.model.Filme;
@@ -128,6 +133,8 @@ public class FrmFilmes extends JFrame {
 
 		// Inserindo dados na tabela
 		Object[] linha = new Object[5];
+		
+		
 
 		for (Filme filme : filmes) { // filmes é o ArrayList
 			linha[0] = filme.getId();
@@ -136,16 +143,12 @@ public class FrmFilmes extends JFrame {
 			linha[3] = filme.getDiretor();
 			linha[4] = filme.getVisto();
 			
-			tableFilmes.setForeground(white);
+			
 			tableFilmes.setRowHeight(20, 20);;
 			
-			if(linha[4].equals("Não")) {
-				tableFilmes.setBackground(red);
-			} else {
-				tableFilmes.setBackground(green);
-			}
-
 			modelTabela.addRow(linha);
+			
+			
 		}
 
 		tableFilmes.setModel(modelTabela);
@@ -220,4 +223,5 @@ public class FrmFilmes extends JFrame {
 			JOptionPane.showMessageDialog(null, "Por favor, selecione um filme. ", "Erro", JOptionPane.ERROR_MESSAGE);
 		}
 	}
+		
 }

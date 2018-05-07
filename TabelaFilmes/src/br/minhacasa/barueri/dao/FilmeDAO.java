@@ -20,6 +20,7 @@ public class FilmeDAO {
 	private  ResultSet result;
 	
 	
+	
 	//Consultar filmes
 	
 	public  ResultSet getFilmes() {
@@ -127,8 +128,8 @@ public class FilmeDAO {
 	}
 	
 	//método para inserir dados
-	public  void gravar() {
-		PreparedStatement stm = null;
+	public void gravar() {
+		
 	
 		try {
 			String add = "INSERT INTO filmes" + 
@@ -147,15 +148,18 @@ public class FilmeDAO {
 
 			stm.execute();
 			
+			JOptionPane.showMessageDialog(null, "Sucesso");
+			
 			Conexao.fecharConexao();
 			
 		}catch(Exception e) {
 			System.out.println(e.getMessage());
+			
 		}
 	}
 	
 	//método para eliminação de um registro
-	public  void deletar() {
+	public void deletar() {
 		PreparedStatement stm = null;
 		
 		try {
@@ -165,6 +169,8 @@ public class FilmeDAO {
 			
 			stm.execute();
 			
+			JOptionPane.showMessageDialog(null, "Sucesso");
+			
 			Conexao.fecharConexao();
 			
 		}catch(Exception erro) {
@@ -172,7 +178,7 @@ public class FilmeDAO {
 		}
 	}
 	
-	public  void atualizar() {
+	public void atualizar() {
 		
 		PreparedStatement stm = null;
 		
@@ -183,6 +189,8 @@ public class FilmeDAO {
 			
 			stm.execute();
 			
+			JOptionPane.showMessageDialog(null, "Sucesso");
+			
 			Conexao.fecharConexao();
 			
 		}catch(Exception erro) {
@@ -191,5 +199,9 @@ public class FilmeDAO {
 			JOptionPane.showMessageDialog(null, "Não foi possível atualizar", "Error", 
 					JOptionPane.ERROR_MESSAGE);
 		}
+	}
+
+	public void setFilme(Filme filme) {
+		this.filme = filme;
 	}
 }

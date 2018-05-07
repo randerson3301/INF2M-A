@@ -145,6 +145,8 @@ public Contato getContato(int id) {
 	
 	public void gravar() {
 		
+		result = null;
+		stm = null;
 		
 		String sql = "INSERT INTO contatos" + "( nome, dtNasc, email, endereco,"
 				+ " telefone, celular, sexo)" + 

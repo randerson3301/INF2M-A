@@ -6,6 +6,7 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 
 import br.senai.sp.jandira.dao.ClienteDAO;
@@ -13,6 +14,8 @@ import br.senai.sp.jandira.model.Cliente;
 
 import java.awt.Color;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import javax.swing.ImageIcon;
 import javax.swing.JScrollPane;
@@ -29,6 +32,7 @@ public class FrmAcademia extends JFrame {
 	private JPanel panelPrincipal;
 	private final JPanel panelTitulo = new JPanel();
 	private JTable tableClientes;
+	private JButton btnAtualizar;
 
 	/**
 	 * Create the frame.
@@ -75,18 +79,31 @@ public class FrmAcademia extends JFrame {
 			}
 		});
 		btnAdicionar.setToolTipText("Adicionar Cliente");
-		btnAdicionar.setIcon(new ImageIcon(FrmAcademia.class.getResource("/br/senai/sp/jandira/imagens/add.png")));
+		btnAdicionar.setIcon(new ImageIcon(FrmAcademia.class.getResource("/br/senai/sp/jandira/imagens/add-client.png")));
 			
 		btnAdicionar.setBounds(10, 11, 74, 62);
 		panelBotoes.add(btnAdicionar);
 
 		JButton btnEditar = new JButton("");
+		btnEditar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				receberDados("Editar");
+				
+				
+			}
+		});
 		btnEditar.setToolTipText("Editar Cliente");
 		btnEditar.setIcon(new ImageIcon(FrmAcademia.class.getResource("/br/senai/sp/jandira/imagens/edit.png")));
 		btnEditar.setBounds(99, 11, 74, 62);
 		panelBotoes.add(btnEditar);
 
 		JButton btnExcluir = new JButton("");
+		btnExcluir.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				receberDados("Excluir");
+			}
+		});
 		btnExcluir.setToolTipText("Excluir Cliente");
 		btnExcluir.setIcon(new ImageIcon(FrmAcademia.class.getResource("/br/senai/sp/jandira/imagens/delete.png")));
 		btnExcluir.setBounds(187, 11, 74, 62);
@@ -97,6 +114,13 @@ public class FrmAcademia extends JFrame {
 		btnSair.setIcon(new ImageIcon(FrmAcademia.class.getResource("/br/senai/sp/jandira/imagens/cancel.png")));
 		btnSair.setBounds(433, 11, 74, 62);
 		panelBotoes.add(btnSair);
+		
+		btnAtualizar = new JButton("");
+		
+		btnAtualizar.setIcon(new ImageIcon(FrmAcademia.class.getResource("/br/senai/sp/jandira/imagens/update-icon.png")));
+		btnAtualizar.setToolTipText("Atualizar Tabela");
+		btnAtualizar.setBounds(279, 11, 74, 62);
+		panelBotoes.add(btnAtualizar);
 		
 		criarTabela();
 		
@@ -121,7 +145,10 @@ public class FrmAcademia extends JFrame {
 			public boolean isCellEditable(int col, int row) {
 				return false;
 			}
+			
 		};
+		
+		
 		
 		//Adicionando nomes as colunas que serão criadas
 		String[] nomeColunas = {"ID", "Nome"};
@@ -137,6 +164,8 @@ public class FrmAcademia extends JFrame {
 			linha[1] = cliente.getNome();
 			
 			modelTabela.addRow(linha);
+			
+			
 		}
 		
 		//Setando o modelo a tabela
@@ -164,7 +193,7 @@ public class FrmAcademia extends JFrame {
 		try {
 			int linha = tableClientes.getSelectedRow();
 		
-			int id = (int)tableClientes.getValueAt(linha, 0); 
+			int id = (int) tableClientes.getValueAt(linha, 0); 
 			
 			ClienteDAO dao = new ClienteDAO();
 			
@@ -172,25 +201,27 @@ public class FrmAcademia extends JFrame {
 			
 			cliente = dao.getCliente(id);
 			
-			Date dtAtual = new Date();
-			
 			frmCliente.setTxtID(cliente.getId());
-			
-			frmCliente.setTxtAltura(cliente.getAltura());
 			
 			frmCliente.setTxtNome(cliente.getNome());
 			
-			frmCliente.setTxtPeso(cliente.getPeso());
+			frmCliente.setTxtData(cliente.getDtNascimento());
 			
-			//frmCliente.setTxtDtNascimento(cliente.getDtNascimento());
-
+			frmCliente.setTxtPeso((cliente.getPeso()));
 			
-
+			frmCliente.setTxtAltura(cliente.getAltura());
 			
-
+			frmCliente.setCbSexo(cliente.getSexo());
 			
-		}catch(Exception erro) {
+			frmCliente.setCbNivel(cliente.getNivelAtividade());
+			
+			frmCliente.setVisible(true);
+			
+			} catch(Exception erro) {
 			System.out.println(erro.getMessage());
+			erro.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Por favor, "
+					+ "selecione um contato", "Error Message", JOptionPane.ERROR_MESSAGE);
 			
 			
 		}

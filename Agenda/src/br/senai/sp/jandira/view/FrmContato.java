@@ -39,7 +39,7 @@ public class FrmContato extends JFrame {
 	private JTextField txtCelular;
 	private JComboBox cbSexo;
 	private JTextArea txtEndereco;
-
+	//private JComboBox ;
 	private JFormattedTextField txtData;
 
 	public void setTxtID(int id) {

@@ -23,6 +23,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.awt.event.ActionEvent;
 
 public class FrmFilme extends JFrame {
@@ -232,13 +233,18 @@ public class FrmFilme extends JFrame {
 					filme.setSinopse(txtSinopse.getText());
 					filme.setDuracao(txtTempo.getText());
 					
-					if(lblOperacao.equals("Adicionar")) {
+					dao.setFilme(filme);
+					
+					if(lblOperacao.getText().equals("Adicionar")) {
 						dao.gravar();
-					} else if(lblOperacao.equals("Editar")) {
+						limparDados();
+						
+					} else if(lblOperacao.getText().equals("Editar")) {
 						filme.setId(Integer.parseInt(txtID.getText()));
 						
 						dao.atualizar();
-					} else if(lblOperacao.equals("Excluir")) {
+					
+					} else if(lblOperacao.getText().equals("Excluir")) {
 						filme.setId(Integer.parseInt(txtID.getText()));
 						
 						dao.deletar();
@@ -246,6 +252,8 @@ public class FrmFilme extends JFrame {
 				
 				} catch(Exception erro) {
 					System.out.println(erro.getMessage());
+					
+					
 					JOptionPane.showMessageDialog(null, 
 							"Não foi possível realizar a operação",
 							"Alerta de Erro", JOptionPane.ERROR_MESSAGE);
@@ -262,5 +270,18 @@ public class FrmFilme extends JFrame {
 		btnCancelar.setIcon(new ImageIcon(FrmFilme.class.getResource("/br/minhacasa/barueri/imagens/cancel.png")));
 		btnCancelar.setBounds(333, 392, 63, 47);
 		panelPrincipal.add(btnCancelar);
+	}
+	
+	private void limparDados() {
+		txtID.setText("");
+		txtTitulo.setText("");
+		txtDiretor.setText("");
+		txtAno.setText("");
+		txtGenero.setText("");
+		txtSinopse.setText("");
+		txtTempo.setText("");
+		
+		txtTitulo.grabFocus();
+		
 	}
 }
