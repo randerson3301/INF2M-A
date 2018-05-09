@@ -1,12 +1,11 @@
 package br.senai.sp.jandira.view;
 
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
+
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.TableModelEvent;
+
 import javax.swing.table.DefaultTableModel;
 
 import br.senai.sp.jandira.dao.ClienteDAO;
@@ -24,7 +23,7 @@ import javax.swing.border.BevelBorder;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Date;
+
 import java.awt.event.ActionEvent;
 
 public class FrmAcademia extends JFrame {
@@ -33,6 +32,9 @@ public class FrmAcademia extends JFrame {
 	private final JPanel panelTitulo = new JPanel();
 	private JTable tableClientes;
 	private JButton btnAtualizar;
+	
+	//chamando o objeto DAO do Cliente
+	private ClienteDAO dao;
 
 	/**
 	 * Create the frame.
@@ -135,12 +137,12 @@ public class FrmAcademia extends JFrame {
 		tableClientes = new JTable();
 		ArrayList<Cliente> clientes = new ArrayList<>();
 		
-		ClienteDAO dao = new ClienteDAO();
+		 dao = new ClienteDAO();
 		
 		//ArrayList recebe o contatoDAO
 		clientes = dao.getListaClientes();
 		
-		//Proibindo a realocação das colunas
+		//Proibindo a edição dos campos
 		DefaultTableModel modelTabela = new DefaultTableModel() {
 			public boolean isCellEditable(int col, int row) {
 				return false;
@@ -195,7 +197,7 @@ public class FrmAcademia extends JFrame {
 		
 			int id = (int) tableClientes.getValueAt(linha, 0); 
 			
-			ClienteDAO dao = new ClienteDAO();
+			dao = new ClienteDAO();
 			
 			Cliente cliente = new Cliente();
 			
@@ -225,8 +227,5 @@ public class FrmAcademia extends JFrame {
 			
 			
 		}
-		
-		
-		
 	}
 }

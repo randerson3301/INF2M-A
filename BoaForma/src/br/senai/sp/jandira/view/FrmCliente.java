@@ -5,13 +5,13 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.MaskFormatter;
 
-import br.senai.sp.jandira.controller.ControllerClienteDAO;
+
 import br.senai.sp.jandira.dao.ClienteDAO;
 import br.senai.sp.jandira.model.Cliente;
 
 import java.awt.Color;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
+
 
 import java.awt.Font;
 import javax.swing.JTextField;
@@ -30,7 +30,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.border.TitledBorder;
 import javax.swing.UIManager;
 import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
+
 
 public class FrmCliente extends JFrame {
 
@@ -39,7 +39,6 @@ public class FrmCliente extends JFrame {
 	private JTextField txtPeso;
 	private JTextField txtAltura;
 	private JTextField txtID;
-	private JTextField txtIdade;
 	private JComboBox<String> cbNivel;
 	private JComboBox cbSexo;
 
@@ -200,7 +199,7 @@ public class FrmCliente extends JFrame {
 		lblSexo.setBounds(10, 152, 45, 20);
 		panelDados.add(lblSexo);
 
-		cbSexo = new JComboBox();
+		cbSexo = new JComboBox<>();
 		cbSexo.setModel(new DefaultComboBoxModel(new String[] { "Feminino", "Masculino" }));
 		cbSexo.setBounds(55, 152, 105, 20);
 		panelDados.add(cbSexo);
@@ -254,7 +253,7 @@ public class FrmCliente extends JFrame {
 		JLabel lblResultadoNivel = new JLabel("...  ");
 		lblResultadoNivel.setForeground(new Color(14, 66, 147));
 		lblResultadoNivel.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		lblResultadoNivel.setBounds(124, 11, 228, 27);
+		lblResultadoNivel.setBounds(124, 11, 189, 27);
 		panelResultados.add(lblResultadoNivel);
 
 		JScrollPane scrollIMC = new JScrollPane();
@@ -275,11 +274,17 @@ public class FrmCliente extends JFrame {
 		lblSintomas.setForeground(Color.BLUE);
 		lblSintomas.setBounds(5, 24, 400, 14);
 		panelIMC.add(lblSintomas);
-
-		txtIdade = new JTextField();
-		txtIdade.setColumns(10);
-		txtIdade.setBounds(306, 15, 86, 20);
-		panelResultados.add(txtIdade);
+		
+		JLabel lblIdade = new JLabel("Idade:");
+		lblIdade.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		lblIdade.setBounds(347, 14, 41, 20);
+		panelResultados.add(lblIdade);
+		
+		JLabel lblIdadeResultado = new JLabel("...");
+		lblIdadeResultado.setForeground(new Color(14, 66, 147));
+		lblIdadeResultado.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblIdadeResultado.setBounds(390, 14, 56, 20);
+		panelResultados.add(lblIdadeResultado);
 
 		JPanel panelTitulo = new JPanel();
 		panelTitulo.setBounds(0, 0, 452, 71);
@@ -308,6 +313,10 @@ public class FrmCliente extends JFrame {
 		panelBotoes.setBackground(new Color(155, 194, 255));
 
 		JButton btnSalvar = new JButton("");
+		
+		//Criando um cliente
+		final Cliente cliente = new Cliente();
+		
 		btnSalvar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 
@@ -325,9 +334,6 @@ public class FrmCliente extends JFrame {
 
 					dataAccess = toDataBase.format(date);
 
-					// Criando um cliente
-					Cliente cliente = new Cliente();
-
 					cliente.setNome(txtNome.getText());
 
 					cliente.setDtNascimento(dataAccess);
@@ -340,18 +346,20 @@ public class FrmCliente extends JFrame {
 
 					cliente.setNivelAtividade((cbNivel.getSelectedItem().toString()));
 
-					ClienteDAO dao = new ClienteDAO();
-
 					dao.setCliente(cliente);
 
 					dao.setOperacaoBanco(lblOperacao.getText(), txtID.getText());
 
 					dao.limparCampos(lblOperacao.getText(), txtNome, txtData, txtID, txtAltura, txtPeso, cbNivel,
 							cbSexo);
-
+				
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
+					dao.proibirCampoNulo();
+					
 					e.printStackTrace();
+					
+					
 				}
 
 			}
@@ -368,23 +376,22 @@ public class FrmCliente extends JFrame {
 		btnCancelar.setBounds(368, 24, 71, 56);
 		panelBotoes.add(btnCancelar);
 
-		// Criando objeto da classe ClienteAcademia
-		Cliente cliente = new Cliente();
+		
 
 		// Eventos para os cálculos
 		btnCalcular.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-
-				txtIdade.setText(String.valueOf(dao.getIdade(txtData.getText())));
-
+				//Retornando a idade do cliente
+				lblIdadeResultado.setText(String.valueOf(dao.getIdade(txtData.getText())) + " anos");
+				
+				
 				// Setando valores dos atributos do cliente
 				cliente.setNome(txtNome.getText());
 				cliente.setAltura(Integer.parseInt(txtAltura.getText()));
 				cliente.setPeso(Integer.parseInt(txtPeso.getText()));
-				// cliente.setIdade(txtIdade.getText());
-
+				
 				cliente.setNivelAtividade(String.valueOf(cbNivel.getSelectedItem()));
 
 				// Dados retornados
@@ -412,23 +419,6 @@ public class FrmCliente extends JFrame {
 
 				lblResultFCM.setText(String.valueOf(cliente.getFcm()));
 
-				// System.out.println(String.valueOf(dao.calcularTMB
-				// (Integer.parseInt(txtPeso.getText()), Integer.parseInt(txtAltura.getText(),
-				// dao.getIdade(txtData.getText()),
-				// dao.calcularTaxaNivel(
-				// cbNivel.getSelectedItem().toString()),
-				// cbSexo.getSelectedIndex())));
-
-				// classificação e sintomas do cliente
-				// cliente.validarClassificacao(cliente.getImc(),
-				// String.valueOf(listIMC.getSelectedIndex()));
-
-				// cliente.validarSintomas(cliente.getImc(),
-				// String.valueOf(listIMC.getSelectedIndex()));
-
-				// calculando a taxa de nivel de atividade do cliente
-
-				// calculo do tmb
 
 				lblResultTMB.setText(String.valueOf(cliente.getTmb()));
 

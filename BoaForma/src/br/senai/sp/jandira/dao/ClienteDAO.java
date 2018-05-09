@@ -13,17 +13,18 @@ import javax.swing.JTextField;
 
 import br.senai.sp.jandira.jdbc.Conexao;
 import br.senai.sp.jandira.model.Cliente;
-import br.senai.sp.jandira.view.FrmCliente;
 
 public class ClienteDAO {
 
 	private Cliente cliente;
 
-	private PreparedStatement stm;
+	private PreparedStatement stm = null;
 
-	private ResultSet result;
+	private ResultSet result = null;
 
 	SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+
+	private boolean adicionado;
 
 	// método de consulta no Banco de Dados
 
@@ -31,36 +32,16 @@ public class ClienteDAO {
 		this.cliente = cliente;
 	}
 
-	public ResultSet getClientes() {
-		String sql = "SELECT * FROM clientes ORDER BY nome ASC";
-		result = null;
-		stm = null;
-
-		try {
-
-			stm = Conexao.getConexao().prepareStatement(sql);
-
-			result = stm.executeQuery();
-
-			System.out.println("Ok");
-
-			Conexao.fecharConexao();
-
-		} catch (Exception erro) {
-			System.out.println(erro.getMessage());
-
-			JOptionPane.showMessageDialog(null,
-					"Não foi " + "possível fazer a consulta. Por Favor," + "tente novamente mais tarde. ", "Error",
-					JOptionPane.ERROR_MESSAGE);
-		}
-
-		return result;
+	public boolean isAdicionado() {
+		return adicionado;
 	}
 
-	// método do arraylist
+	public void setAdicionado(boolean adicionado) {
+		this.adicionado = adicionado;
+	}
+
+	// método do arraylist para pegar os valores dos clientes
 	public ArrayList<Cliente> getListaClientes() {
-		result = null;
-		stm = null;
 
 		ArrayList<Cliente> clientes = new ArrayList<>();
 		String sql = "SELECT * FROM clientes ORDER BY nome ASC";
@@ -85,8 +66,6 @@ public class ClienteDAO {
 				clientes.add(cliente);
 			}
 
-			System.out.println("Ok!!");
-
 			Conexao.fecharConexao();
 
 		} catch (Exception erro) {
@@ -103,8 +82,7 @@ public class ClienteDAO {
 
 	// método para pegar os dados do cliente quando ele for selecionado
 	public Cliente getCliente(int id) {
-		result = null;
-		stm = null;
+
 		String sql = "SELECT * FROM clientes WHERE id = ?";
 
 		Cliente cliente = new Cliente();
@@ -128,8 +106,6 @@ public class ClienteDAO {
 			cliente.setSexo(result.getString("sexo"));
 			cliente.setNivelAtividade(result.getString("nivelAtividade"));
 
-			System.out.println("Ok!!!!!!!!");
-
 			Conexao.fecharConexao();
 
 		} catch (SQLException erro) {
@@ -146,8 +122,6 @@ public class ClienteDAO {
 
 	// método para adicionar um novo cliente ao banco de dados
 	public void gravar() {
-		stm = null;
-
 		// comando sql
 		String sql = "INSERT INTO clientes" + "(nome, dtNasc, peso, altura, sexo, nivelAtividade)"
 				+ " VALUES(?, ?, ?, ?, ?, ?)";
@@ -163,18 +137,17 @@ public class ClienteDAO {
 			stm.setString(6, cliente.getNivelAtividade());
 
 			stm.execute();
-
-			System.out.println("Foi Adicionado");
+			
+			proibirCampoNulo();
 
 			Conexao.fecharConexao();
 
-		} catch (SQLException erro) {
-			erro.printStackTrace();
-			;
-
+		} catch (Exception erro) {
 			JOptionPane.showMessageDialog(null,
 					"Não foi " + "possível adicionar o registro. Por Favor," + "tente novamente mais tarde. ", "Error",
 					JOptionPane.ERROR_MESSAGE);
+
+			erro.printStackTrace();
 		}
 	}
 
@@ -191,8 +164,6 @@ public class ClienteDAO {
 
 			stm.execute();
 
-			System.out.println("Beleza");
-
 			Conexao.fecharConexao();
 
 		} catch (Exception erro) {
@@ -206,8 +177,6 @@ public class ClienteDAO {
 
 	// método para atualizar os dados de um cliente do banco de dados.
 	public void atualizar() {
-		stm = null;
-		// Cliente cliente = new Cliente();
 
 		// comando sql
 		String sql = "UPDATE clientes SET nome = ?, dtNasc = ?, " + "peso = ?, altura = ?, "
@@ -227,7 +196,7 @@ public class ClienteDAO {
 
 			stm.execute();
 
-			JOptionPane.showMessageDialog(null, "Beleza");
+			JOptionPane.showMessageDialog(null, "Formulário atualizado " + "com sucesso !");
 
 			Conexao.fecharConexao();
 
@@ -244,18 +213,21 @@ public class ClienteDAO {
 	// realizando as operações necessárias
 	public void setOperacaoBanco(String oper, String id) {
 
-		// dao.setCliente(cliente);
-
 		if (oper.equals("Adicionar")) {
-			System.out.println(oper);
 			gravar();
+
+			
 
 		} else if (oper.equals("Editar")) {
 			cliente.setId(Integer.parseInt(id));
 			atualizar();
 
+			
+
 		} else if (oper.equals("Excluir")) {
 			cliente.setId(Integer.parseInt(id));
+
+			
 
 			int confirma = JOptionPane.showConfirmDialog(null, "Deseja excluir " + "o cliente ?", "Confirmação",
 					JOptionPane.OK_OPTION, JOptionPane.CANCEL_OPTION);
@@ -271,11 +243,11 @@ public class ClienteDAO {
 	}
 
 	// limpando os campos após a adição de um novo contato
-	// método para limpar os campos após adicionar um cliente
 	public void limparCampos(String s, JTextField t1, JTextField t2, JTextField t3, JTextField t4, JTextField t5,
 			JComboBox<String> box1, JComboBox box2) {
 
-		if (s.equals("Adicionar")) {
+		if (isAdicionado()) {
+
 			t1.setText("");
 			t2.setText("");
 			t3.setText("");
@@ -286,6 +258,23 @@ public class ClienteDAO {
 
 			t1.grabFocus();
 		}
+	}
+
+	// método que não permitirá que o usuário deixe qualquer
+	// campo em branco.
+
+	public void proibirCampoNulo() {
+
+		if (cliente.getNome().equals("") || cliente.getDtNascimento().equals("") || cliente.getAltura() == 0
+				|| cliente.getPeso() == 0) {
+			JOptionPane.showMessageDialog(null, "Por favor, " + "certifique-se que não há campos em branco.",
+					"Valores" + " Inválidos Inseridos", JOptionPane.ERROR_MESSAGE);
+		} else {
+			JOptionPane.showMessageDialog(null, "Sua lista foi modificada !");
+			setAdicionado(true);
+
+		}
+
 	}
 
 	// setando a sexualidade do cliente
@@ -316,7 +305,7 @@ public class ClienteDAO {
 		} else if (nivel.equals("Bastante Ativo")) {
 			cb.setSelectedIndex(3);
 
-		} else if (nivel.equals("Muito Ativo")) {
+		} else {
 			cb.setSelectedIndex(4);
 		}
 	}
@@ -392,12 +381,9 @@ public class ClienteDAO {
 			sintomas = "Apneia do sono, falta de ar.";
 			return sintomas;
 
-		} else if (imc > 40) {
+		} else {
 			sintomas = "Refluxo, dificuldade para se mover, escaras, diabetes, infarto, AVC ";
 			return sintomas;
-
-		} else {
-			return "";
 
 		}
 	}
@@ -405,16 +391,16 @@ public class ClienteDAO {
 	// método para retornar a diferença de data
 	public int getIdade(String dtNasc) {
 
-		SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-
 		Date dt = new Date();
 
 		String dtPC = df.format(dt);
 
+		// pegando os valores do ano
 		int yearNasc = Integer.parseInt(dtNasc.substring(6, 10));
 
 		int yearPC = Integer.parseInt(dtPC.substring(6, 10));
 
+		// pegando os valores dos meses
 		int monNasc = Integer.parseInt(dtNasc.substring(3, 5));
 
 		int monPC = Integer.parseInt(dtPC.substring(3, 5));
@@ -463,10 +449,6 @@ public class ClienteDAO {
 
 	// calcular o TMB
 	public double calcularTMB(int peso, int altura, int idade, double taxaNivel, int homem) {
-		// int p = Integer.parseInt(peso); //convertendo valor do txtPeso para int
-		// int a = Integer.parseInt(altura);
-
-		System.out.println(idade);
 
 		if (homem == 1) {
 			return (66 + (13.7 * peso) + (5 * altura) - (6.8 * idade)) * taxaNivel;
@@ -479,11 +461,11 @@ public class ClienteDAO {
 	}
 
 	// FCM
-	public double calcularFCM(int idade, int peso, int homem) {
+	public double calcularFCM(int idade, int peso, int sexo) {
 
 		peso = peso / 100;
 
-		if (homem == 1) {
+		if (sexo == 1) {
 			return ((210 - (0.5 * idade)) - peso) + 4;
 
 		} else {
